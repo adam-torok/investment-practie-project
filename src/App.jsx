@@ -1,35 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import Header from "./components/Header"
+import Input from "./components/Input"
+import Table from "./components/Table"
+import { calculateInvestmentResults } from "./utils/invesment";
+
+const initialValues = [
+    {
+        label: 'Initial investment',
+        name: 'initial',
+        value: 0,
+    },
+    {
+        label: 'Annual investment',
+        name: 'annual',
+        value: 0,
+    },
+    {
+        label: 'Expected return',
+        name: 'expected',
+        value: 0,
+    },
+    {
+        label: 'Duration',
+        name: 'duration',
+        value: 0,
+    }
+]
+
+let annualData = [];
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [values, setValues] = useState(initialValues);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const [initial, annual, expected, duration] = values;
+
+    const theData = {
+        initialInvestment: initial.value,
+        annualInvestment: annual.value,
+        expectedReturn: expected.value,
+        duration: duration.value
+    }
+
+    annualData = calculateInvestmentResults(theData);
+
+    function handleInputChange(e, name) {
+        setValues((prevValues) => {
+            const newValues = [...prevValues];
+            newValues.find(item => item.name == name).value = +e.target.value
+            return newValues;
+        });
+    }
+
+    return (
+        <main>
+            <Header />
+            <div id="user-input">
+                {values.map(item => <Input onInputChange={(e) => { handleInputChange(e, item.name) }} key={item.label} name={item.name} label={item.label} />)}
+            </div>
+            <Table data={annualData} />
+        </main>
+    )
 }
 
 export default App
